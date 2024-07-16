@@ -19,7 +19,7 @@ Python + Django + API Telegram
 - $ source venv/Scripts/activate
 - $ python -m pip install --upgrade pip
 - $ pip install -r requirements.txt
-- $ cd yatube_api
+- $ cd 
 - $ python manage.py migrate
 - $ python manage.py runserver
 
