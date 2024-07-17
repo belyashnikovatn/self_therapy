@@ -42,8 +42,13 @@
 - угадать эмоцию (это на будущее)
 
 ## Технологии:
-Python + Django + [Telegram Django Bot](https://github.com/alexanderaleskin/telegram_django_bot_bridge)
+Python + Django + python telegram bot
 
+ [Telegram Django Bot](https://github.com/alexanderaleskin/telegram_django_bot_bridge)
+что читала
+https://habr.com/ru/articles/734786/
+
+https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/
 
 ## Запуск проекта:
 - $ python -m venv venv
