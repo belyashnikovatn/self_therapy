@@ -50,6 +50,7 @@ Python + Django + API Telegram
 - $ source venv/Scripts/activate
 - $ python -m pip install --upgrade pip
 - $ pip install -r requirements.txt
+- add .env for BOT_TOKEN
 - $ cd self_therapy
 - $ python manage.py migrate
 - $ python manage.py runserver

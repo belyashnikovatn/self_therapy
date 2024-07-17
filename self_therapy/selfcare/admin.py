@@ -1,4 +1,4 @@
-"""Register your models here."""
+"""Add some admin models."""
 from django.contrib import admin
 
 from selfcare.models import Person, PersonsHelpTips, PresetsHelpTips
