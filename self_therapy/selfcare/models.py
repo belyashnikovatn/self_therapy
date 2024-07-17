@@ -18,7 +18,7 @@ class PresetsHelpTips(models.Model):
     """Initial tips for self-help."""
 
     text = models.TextField(
-        verbose_name='Текстовое описание подсказки'
+        verbose_name='Текстовое описание подсказки',
     )
 
 
@@ -26,17 +26,15 @@ class PersonsHelpTips(models.Model):
     """Help tips for particular person."""
 
     text = models.TextField(
-        verbose_name='Текстовое описание подсказки'
+        verbose_name='Текстовое описание подсказки',
     )
     is_on = models.BooleanField(
         default=True,
-        verbose_name='Показывать'
+        verbose_name='Показывать',
     )
     likeliness = models.DecimalField(
+        verbose_name='Рейтинг',
         max_digits=1,
         decimal_places=2,
-        default=0.50
-        
+        default=0.50,
     )
-
-
