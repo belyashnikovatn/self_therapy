@@ -59,7 +59,7 @@ https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/
 - add .env for BOT_TOKEN
 - $ cd self_therapy
 - $ python manage.py migrate
-- $ python manage.py runserver
+- $ python manage.py start_care
 
 
 ## Проектирование:
