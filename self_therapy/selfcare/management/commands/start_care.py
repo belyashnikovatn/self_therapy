@@ -48,7 +48,8 @@ class Command(BaseCommand):
         def get_support(message):
             chat_id = message.chat.id
             # пока сделала так, чтобы рандомно, но нужно переделать
-            text = PersonsHelpTips.objects.order_by('?').first()
+            tip = PersonsHelpTips.objects.order_by('?').first()
+            text = tip.text
             bot.send_message(chat_id, text=text)
 
         @bot.message_handler(commands=['start'])
