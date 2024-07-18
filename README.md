@@ -36,7 +36,7 @@
 
 
 ## Технологии:
-Python + Django + SQLite + teltebot (teltebot пока что для скорости, в будущем планиурю Telegram Django Bot, так как там есть TelegramViewSet)
+Python + Django + SQLite + pyTelegramBotAPI (pyTelegramBotAPI пока что для скорости, в будущем планиурю Telegram Django Bot, так как там есть TelegramViewSet)
 
 что читала  
  [Telegram Django Bot](https://github.com/alexanderaleskin/telegram_django_bot_bridge)  
@@ -79,7 +79,7 @@ This is a new paragraph.
 ## Реализация и структура проекта:
 - Оновное приложение -- selfcare, в нём лежат модели (а в будущем будут и вьюшки)
 - Логика бота находится в selfcare\management\commands\start_care.py
-- Набор комманд бота: start, need_help, moodtracker, selfesteem
+- Набор комманд бота: start, need_support, moodtracker, selfesteem
 
 
 ## Зачем я это делала? 

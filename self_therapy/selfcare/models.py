@@ -9,9 +9,9 @@ class Person(models.Model):
         max_length=256,
         verbose_name='ФИО пользователя',
     )
-    tlg_id = models.CharField(
-        max_length=256,
+    tlg_id = models.PositiveIntegerField(
         verbose_name='ID диалога пользователя',
+        unique=True,
     )
 
     class Meta:
@@ -80,4 +80,4 @@ class PersonsHelpTips(models.Model):
 
     def __str__(self):
         """For description."""
-        return f'{self.person} likes {self.text}'
+        return f'{self.text} helps {self.person}'

@@ -20,10 +20,10 @@ class Command(BaseCommand):
         """Make a bot and start work."""
         bot = TeleBot(token=BOT_TOKEN)
 
-        @bot.message_handler(commands=['need_help'])
-        def get_help(message):
+        @bot.message_handler(commands=['need_support'])
+        def get_support(message):
             chat = message.chat
-            # сделала так, чтобы рандомно, но нужно будет переделать
+            # пока сделала так, чтобы рандомно, но нужно переделать
             text = PresetsHelpTips.objects.order_by('?').first()
             bot.send_message(chat.id, text=text)
 
@@ -40,10 +40,10 @@ class Command(BaseCommand):
                 }
             )
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-            button_gethelp = types.KeyboardButton('/need_help')
+            button_getsupport = types.KeyboardButton('/need_support')
             button_moodtracker = types.KeyboardButton('/moodtracker')
             button_selfesteem = types.KeyboardButton('/selfesteem')
-            keyboard.add(button_gethelp)
+            keyboard.add(button_getsupport)
             keyboard.add(button_moodtracker)
             keyboard.add(button_selfesteem)
 
