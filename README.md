@@ -44,13 +44,14 @@ https://habr.com/ru/articles/734786/
 https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/  
 
 ## Запуск проекта:
-- add .env for BOT_TOKEN
+- add .env with a BOT_TOKEN
 - $ python -m venv venv
 - $ source venv/Scripts/activate
 - $ python -m pip install --upgrade pip
 - $ pip install -r requirements.txt
 - $ cd self_therapy
 - $ python manage.py migrate
+- $ python manage.py loaddata presetshelptips.json 
 - $ python manage.py start_care // для запуска бота
 - $ python manage.py runserver  // для запуска админки 
 
@@ -58,7 +59,7 @@ https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/
 ## Проектирование:
 
 ![Схема БД](https://github.com/belyashnikovatn/self_therapy/blob/main/self_help_project_v2.png)  
-This is a new paragraph.
+
 
 ### Задачи:
 + Установка, настройка (done) 
@@ -70,7 +71,7 @@ This is a new paragraph.
 
 
 ### Задачи со звёздочкой:
-- Фикстуры для предварительных настроек (to do)
+- Фикстуры для предварительных настроек (done)
 - Расширенный функционал (to do)
 - Шифрование id диалога (и вообще подумать про id юзера, может и стоить использовать только id чата)  (to do)
 - Добавить логирование (to do)
@@ -79,10 +80,9 @@ This is a new paragraph.
 ## Реализация и структура проекта:
 - Оновное приложение -- selfcare, в нём лежат модели (а в будущем будут и вьюшки)
 - Логика бота находится в selfcare\management\commands\start_care.py
-- Набор комманд бота: start, need_support, moodtracker, selfesteem
 
 
-## Зачем я это делала? 
+## Зачем я это делаю? 
 - Для личного использования;
 - Для удобавства: всё это лежало в разных местах сотового или даже на бумаге, хотя составляло часть одного процесса;
 - Прокачаться в обучении;
