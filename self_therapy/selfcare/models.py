@@ -75,8 +75,8 @@ class PersonsHelpTips(models.Model):
     class Meta:
         """Meta class for description."""
 
-        verbose_name = 'подсказка'
-        verbose_name_plural = 'Подсказки'
+        verbose_name = 'подсказка пользователя'
+        verbose_name_plural = 'Подсказки конкретного пользователя'
 
     def __str__(self):
         """For description."""
