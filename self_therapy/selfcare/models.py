@@ -81,3 +81,26 @@ class PersonsHelpTips(models.Model):
     def __str__(self):
         """For description."""
         return f'{self.text} helps {self.person}'
+
+
+class Emotions(models.Model):
+    """Emotions to read and explore."""
+
+    name = models.CharField(
+        max_length=256,
+        verbose_name='Название эмоции',
+    )
+
+    descriprion = models.TextField(
+        verbose_name='Описание эмоции'
+    )
+
+    class Meta:
+        """Meta class for description."""
+
+        verbose_name = 'эмоция'
+        verbose_name_plural = 'Эмоции'
+
+    def __str__(self):
+        """For description."""
+        return self.name
