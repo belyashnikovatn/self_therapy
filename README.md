@@ -43,12 +43,11 @@
 - угадать эмоцию (это на будущее)
 
 ## Технологии:
-Python + Django + python telegram bot
+Python + Django + teltebot (это пока что для скорости, в будущем планиурю Telegram Django Bot, так как там есть TelegramViewSet)
 
  [Telegram Django Bot](https://github.com/alexanderaleskin/telegram_django_bot_bridge)
-что читала
-https://habr.com/ru/articles/734786/
-
+что читала  
+https://habr.com/ru/articles/734786/  
 https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/
 
 ## Запуск проекта:
@@ -59,7 +58,8 @@ https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/
 - add .env for BOT_TOKEN
 - $ cd self_therapy
 - $ python manage.py migrate
-- $ python manage.py start_care
+- $ python manage.py start_care // для запуска бота
+- $ python manage.py runserver  // для запуска админки 
 
 
 ## Проектирование:

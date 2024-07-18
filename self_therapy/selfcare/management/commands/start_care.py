@@ -26,8 +26,16 @@ class Command(BaseCommand):
         
         @bot.message_handler(commands=['start'])
         def wake_up(message):
+            chat_id = message.chat.id
             chat = message.chat
             name = chat.first_name
+
+            Person.objects.get_or_create(
+                tlg_id=chat_id,
+                defaults={
+                    'name': name,
+                }
+            )
             keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
             button_gethelp = types.KeyboardButton('/need_help')
             button_moodtracker = types.KeyboardButton('/moodtracker')
