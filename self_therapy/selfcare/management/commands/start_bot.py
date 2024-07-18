@@ -3,7 +3,9 @@
 import os
 from django.core.management.base import BaseCommand
 from telegram import Bot, Update
-from telegram.ext import CommandHandler, CallbackContext, Updater
+from telegram.ext import (
+    Application, CommandHandler, CallbackContext,
+    Updater, MessageHandler, filters, ContextTypes)
 import requests
 from telebot import TeleBot, types
 from dotenv import load_dotenv
@@ -17,7 +19,7 @@ TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 class Command(BaseCommand):
     help = 'Telegram bot for selfcare'
 
-    def handle(self, *args, **kwargs):
+    def handle(self, *args, **options):
         bot = TeleBot(token=BOT_TOKEN)
 
         bot.send_message(
