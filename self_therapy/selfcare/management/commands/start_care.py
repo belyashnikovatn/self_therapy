@@ -9,21 +9,24 @@ from selfcare.models import Person, PersonsHelpTips, PresetsHelpTips
 
 load_dotenv()
 BOT_TOKEN = os.getenv('BOT_TOKEN')
-TELEGRAM_CHAT_ID = os.getenv('TELEGRAM_CHAT_ID')
 
 
 class Command(BaseCommand):
+    """Create custom django-admin commands."""
+
     help = 'Telegram bot for selfcare'
 
     def handle(self, *args, **options):
+        """Make a bot and start work."""
         bot = TeleBot(token=BOT_TOKEN)
 
         @bot.message_handler(commands=['need_help'])
         def get_help(message):
             chat = message.chat
+            # сделала так, чтобы рандомно, но нужно будет переделать
             text = PresetsHelpTips.objects.order_by('?').first()
             bot.send_message(chat.id, text=text)
-        
+
         @bot.message_handler(commands=['start'])
         def wake_up(message):
             chat_id = message.chat.id
