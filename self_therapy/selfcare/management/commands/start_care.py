@@ -19,38 +19,24 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         """Make a bot and start work."""
         bot = TeleBot(token=BOT_TOKEN)
-        # start_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
-        start_keyboard = types.InlineKeyboardMarkup()
-        # btn_create_user = types.KeyboardButton('/createuser')
-        # btn_loadpreset = types.KeyboardButton('/loadpreset')
-        # btn_getemotion = types.KeyboardButton('/getemotion')
-        # btn_getsupport = types.KeyboardButton('/getsupport')
-        btn_addsupport = types.InlineKeyboardButton('Test',
-                                                    callback_data='addsupport')
-        start_keyboard.add(btn_addsupport)
-        # start_keyboard.add(btn_create_user, btn_loadpreset,
-        #                    btn_getemotion, btn_getsupport,
-        #                    btn_addsupport)
+        start_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+        # start_keyboard = types.InlineKeyboardMarkup()
+        btn_create_user = types.KeyboardButton('/createuser')
+        btn_loadpreset = types.KeyboardButton('/loadpreset')
+        btn_getemotion = types.KeyboardButton('/getemotion')
+        btn_getsupport = types.KeyboardButton('/getsupport')
+        # btn_addsupport = types.InlineKeyboardButton('Можно русским языком',
+        #                                             callback_data='addsupport')
+        # start_keyboard.add(btn_addsupport)
+        start_keyboard.add(btn_create_user, btn_loadpreset,
+                           btn_getemotion, btn_getsupport)
 
         @bot.callback_query_handler(func=lambda call: True)
         def add_support(call):
             if call.data == 'addsupport':
-                bot.send_message(call.from_user.id, text='Test add supp')
+                bot.send_message(call.from_user.id, text='Works')
             else:
                 bot.send_message(call.from_user.id, text='Test not add supp')
-
-            # chat_id = message.chat.id
-            # name = message.chat.first_name
-            # # пока сделала так, чтобы рандомно, но нужно переделать
-            # person, _ = Person.objects.get_or_create(
-            #     tlg_id=chat_id,
-            #     defaults={
-            #         'name': name,
-            #     }
-            # )
-            # tip = person.personstips.order_by('?').first()
-            # text = tip.text
-            # bot.send_message(chat_id, text=text)
 
         @bot.message_handler(commands=['createuser'])
         def create_user(message):
