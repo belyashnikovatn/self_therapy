@@ -25,7 +25,7 @@ class Person(models.Model):
         return self.name
 
 
-class PresetsHelpTips(models.Model):
+class PresetHelpTip(models.Model):
     """Initial tips for self-help."""
 
     text = models.TextField(
@@ -43,7 +43,7 @@ class PresetsHelpTips(models.Model):
         return self.text
 
 
-class PersonsHelpTips(models.Model):
+class PersonsHelpTip(models.Model):
     """Help tips for particular person."""
 
     text = models.TextField(
@@ -63,7 +63,7 @@ class PersonsHelpTips(models.Model):
         verbose_name='Рейтинг',
     )
     preset_tip = models.ForeignKey(
-        PresetsHelpTips, on_delete=models.SET_NULL,
+        PresetHelpTip, on_delete=models.SET_NULL,
         verbose_name='Базовая подсказка',
         null=True, blank=True,
         related_name='personstips',
@@ -83,7 +83,7 @@ class PersonsHelpTips(models.Model):
         return f'{self.text} helps {self.person}'
 
 
-class Emotions(models.Model):
+class Emotion(models.Model):
     """Emotions to read and explore."""
 
     name = models.CharField(
