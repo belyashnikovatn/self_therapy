@@ -1,7 +1,7 @@
 """Add some admin models."""
 from django.contrib import admin
 
-from selfcare.models import Person, PersonsHelpTip, PresetHelpTip
+from selfcare.models import Person, PersonsHelpTip, PresetHelpTip, Emotion, MoodTrack
 
 
 class CustomModelAdmin(admin.ModelAdmin):
@@ -21,10 +21,20 @@ class PersonAdmin(CustomModelAdmin):
 
 
 @admin.register(PresetHelpTip)
-class PresetsHelpTipsAdmin(CustomModelAdmin):
-    """Admin PresetsHelpTips."""
+class PresetHelpTipAdmin(CustomModelAdmin):
+    """Admin PresetHelpTips."""
 
 
 @admin.register(PersonsHelpTip)
-class PersonsHelpTipsAdmin(CustomModelAdmin):
-    """Admin PersonsHelpTips."""
+class PersonsHelpTipAdmin(CustomModelAdmin):
+    """Admin PersonsHelpTip."""
+
+
+@admin.register(MoodTrack)
+class MoodTrackAdmin(CustomModelAdmin):
+    """Admin Person mood track."""
+
+
+@admin.register(Emotion)
+class EmotionAdmin(CustomModelAdmin):
+    """Admin Emotion."""

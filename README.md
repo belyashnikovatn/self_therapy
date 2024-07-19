@@ -51,7 +51,7 @@ https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/
 - $ pip install -r requirements.txt
 - $ cd self_therapy
 - $ python manage.py migrate
-- $ python manage.py loaddata presetshelptips.json 
+- $ python manage.py loaddata selfcare_db.json
 - $ python manage.py start_care // для запуска бота
 - $ python manage.py runserver  // для запуска админки 
 

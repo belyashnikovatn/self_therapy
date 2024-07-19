@@ -99,8 +99,34 @@ class Emotion(models.Model):
         """Meta class for description."""
 
         verbose_name = 'эмоция'
-        verbose_name_plural = 'Эмоции'
+        verbose_name_plural = 'Эмоции общее описание'
 
     def __str__(self):
         """For description."""
         return self.name
+
+
+class MoodTrack(models.Model):
+    """For person tracks mood."""
+
+    text = models.TextField(
+        verbose_name='Чувство/настроение',
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+    )
+    person = models.ForeignKey(
+        Person, on_delete=models.CASCADE,
+        related_name='moodtracks',
+        verbose_name='Пользователь',
+    )
+
+    class Meta:
+        """Meta class for description."""
+
+        verbose_name = 'чувство/настроение пользователя'
+        verbose_name_plural = 'Чувства/настроение пользователя'
+
+    def __str__(self):
+        """For description."""
+        return self.text
