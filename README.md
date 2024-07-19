@@ -58,7 +58,7 @@ https://sky.pro/wiki/python/sozdanie-telegram-bota-na-django/
 
 ## Проектирование:
 
-![Схема БД](https://github.com/belyashnikovatn/self_therapy/blob/main/self_help_project_v2.png)  
+![Схема БД](https://github.com/belyashnikovatn/self_therapy/blob/main/self_help_project_v3.png)  
 
 
 ### Задачи:
