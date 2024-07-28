@@ -33,6 +33,7 @@ class Command(BaseCommand):
 
         @bot.callback_query_handler(func=lambda call: True)
         def add_support(call):
+            '''Some comments'''
             if call.data == 'addsupport':
                 bot.send_message(call.from_user.id, text='Works')
             else:
@@ -40,6 +41,7 @@ class Command(BaseCommand):
 
         @bot.message_handler(commands=['createuser'])
         def create_user(message):
+            '''More comments'''
             chat_id = message.chat.id
             name = message.chat.first_name
             Person.objects.get_or_create(
@@ -52,6 +54,7 @@ class Command(BaseCommand):
 
         @bot.message_handler(commands=['loadpreset'])
         def load_preset(message):
+            '''Enough? '''
             chat_id = message.chat.id
             name = message.chat.first_name
 
