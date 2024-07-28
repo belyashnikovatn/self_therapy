@@ -7,6 +7,9 @@ from selfcare.models import Person, PersonsHelpTip, PresetHelpTip, Emotion
 
 
 class TelegramBot:
+    """
+    Bot can create an user, and after that using commands user can get emotion, get support or load preset.
+    """
     def __init__(self, token):
         self._bot = TeleBot(token=token)
         self.start_keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
