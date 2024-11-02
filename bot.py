@@ -4,6 +4,7 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from config_reader import config
+from handlers import commands
 
 
 def init_logger():
@@ -22,8 +23,9 @@ logger = init_logger()
 
 
 async def main():
-    dp = Dispatcher()
     bot = Bot(token=config.bot_token.get_secret_value())
+    dp = Dispatcher()
+    dp.include_router(commands.router)
     await dp.start_polling(bot)
 
 
