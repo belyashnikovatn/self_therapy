@@ -17,4 +17,8 @@ def get_main_menu() -> InlineKeyboardMarkup:
         text='Дневник самооценки',
         callback_data='selfesteem'
     ),
+    builder.button(
+        text='Узнать данные',
+        callback_data='get_data'
+    ),
     return builder.adjust(1).as_markup()
