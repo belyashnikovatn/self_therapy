@@ -9,7 +9,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.types import CallbackQuery
 
-from keyboards.menu import get_main_menu
+import keyboards.menu as menu
 
 
 router = Router()
@@ -24,7 +24,7 @@ class AddDiary(StatesGroup):
 
 
 @router.callback_query(F.data == 'get_data')
-async def send_support(callback: CallbackQuery, state: FSMContext):
+async def get_data(callback: CallbackQuery, state: FSMContext):
     user_data = await state.get_data()
     await callback.message.answer(
         text=f'Вот оно: {user_data["mood"]}.\n'
@@ -34,9 +34,20 @@ async def send_support(callback: CallbackQuery, state: FSMContext):
     await state.clear()
 
 
+@router.callback_query(F.data == 'start')
+async def start(callback: CallbackQuery):
+    await callback.message.answer(
+        text='Выберите пункт меню:',
+        reply_markup=menu.get_main_menu()
+    )
+
+
 @router.callback_query(F.data == 'support')
 async def send_support(callback: CallbackQuery):
-    await callback.message.answer(choice(support_tips))
+    await callback.message.answer(
+        text=choice(support_tips),
+        reply_markup=menu.get_more_help()
+    )
 
 
 @router.callback_query(F.data == 'mood')
@@ -73,5 +84,5 @@ async def mood_done(message: Message, state: FSMContext):
 async def mood_done(message: Message, state: FSMContext):
     await message.answer(
         text='Происходит что-то непонятное',
-        reply_markup=get_main_menu()
+        reply_markup=menu.get_main_menu()
     )

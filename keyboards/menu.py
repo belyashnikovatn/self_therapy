@@ -22,3 +22,16 @@ def get_main_menu() -> InlineKeyboardMarkup:
         callback_data='get_data'
     ),
     return builder.adjust(1).as_markup()
+
+
+def get_more_help() -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    builder.button(
+        text='Ещё',
+        callback_data='support'
+    ),
+    builder.button(
+        text='Главное меню',
+        callback_data='start'
+    )
+    return builder.adjust(1).as_markup()
