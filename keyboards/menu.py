@@ -31,7 +31,7 @@ def get_more_help() -> InlineKeyboardMarkup:
         callback_data='support'
     ),
     builder.button(
-        text='Главное меню',
+        text='🏠 Главное меню',
         callback_data='start'
     )
     return builder.adjust(1).as_markup()
@@ -44,7 +44,7 @@ def after_mood() -> InlineKeyboardMarkup:
         callback_data='mood_diary'
     ),
     builder.button(
-        text='Главное меню',
+        text='🏠 Главное меню',
         callback_data='start'
     )
     return builder.adjust(1).as_markup()
@@ -61,7 +61,7 @@ def after_selfesteem() -> InlineKeyboardMarkup:
         callback_data='selfesteem_diary'
     ),
     builder.button(
-        text='Главное меню',
+        text='🏠 Главное меню',
         callback_data='start'
     )
     return builder.adjust(1).as_markup()

@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-from db.db_operations import set_user
+from db.operations import set_user
 import keyboards.menu as menu
 
 
