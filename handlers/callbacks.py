@@ -6,9 +6,9 @@ from aiogram import Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
-from aiogram.types import Message, ReplyKeyboardRemove
-from aiogram.types import CallbackQuery
+from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
+from db.db_operations import set_user
 import keyboards.menu as menu
 
 
@@ -24,13 +24,19 @@ class Mood(StatesGroup):
 
 
 class Selfesteem(StatesGroup):
-    """For selesteem tracking"""
+    """For selfesteem tracking"""
     addition = State()
     finish = State()
 
 
 @router.callback_query(F.data == 'get_data')
 async def get_data(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
+    user = await set_user(
+        tg_id=callback.message.from_user.id,
+        username=callback.message.from_user.username,
+        full_name=callback.message.from_user.full_name
+    )
     user_data = await state.get_data()
     await callback.message.answer(
         text=f'Вот оно: {user_data.get("mood")}.\n'
@@ -59,7 +65,7 @@ async def send_support(callback: CallbackQuery):
 @router.callback_query(F.data == 'mood')
 async def get_mood(callback: CallbackQuery, state: FSMContext):
     await callback.message.answer(
-        'Напишите в любой форме,что вы сейчас чувствуете'
+        'Напишите в любой форме, что вы сейчас чувствуете'
     )
     await state.set_state(Mood.addition)
 
