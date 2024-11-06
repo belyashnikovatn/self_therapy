@@ -8,13 +8,13 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-from db.operations import set_user
+from db.operations import set_user, get_advices
 import keyboards.menu as menu
 
 
 router = Router()
 
-support_tips = ['Дышите квадратами', 'Пробегитесь!', 'Умойтесь холодной водой']
+# support_tips = ['Дышите квадратами', 'Пробегитесь!', 'Умойтесь холодной водой']
 
 
 class Mood(StatesGroup):
@@ -33,14 +33,19 @@ class Selfesteem(StatesGroup):
 async def get_data(callback: CallbackQuery, state: FSMContext):
     await state.clear()
     user = await set_user(
-        tg_id=callback.message.from_user.id,
-        username=callback.message.from_user.username,
-        full_name=callback.message.from_user.full_name
+        tg_id=callback.from_user.id,
+        username=callback.from_user.username,
+        full_name=callback.from_user.full_name
     )
-    user_data = await state.get_data()
+    advices = await get_advices(
+        user_id=user.id
+    )
+    # user_data = await state.get_data()
     await callback.message.answer(
-        text=f'Вот оно: {user_data.get("mood")}.\n'
-        f'{user_data.get("selfesteem")}',
+        # text=f'Вот оно: {user_data.get("mood")}.\n'
+        # f'{user_data.get("selfesteem")}',
+        text=f'{user} \n'
+        f'{advices}',
         reply_markup=ReplyKeyboardRemove()
     )
     await state.clear()
@@ -48,16 +53,24 @@ async def get_data(callback: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data == 'start')
 async def start(callback: CallbackQuery):
+    user = await set_user(
+        tg_id=callback.from_user.id,
+        username=callback.from_user.username,
+        full_name=callback.from_user.full_name
+    )
     await callback.message.answer(
-        text='Выберите пункт меню:',
+        text=f'Хей {user} \n Выберите пункт меню:',
         reply_markup=menu.get_main_menu()
     )
 
 
 @router.callback_query(F.data == 'support')
 async def send_support(callback: CallbackQuery):
+    advices = await get_advices(
+        user_id=callback.from_user.id
+    )
     await callback.message.answer(
-        text=choice(support_tips),
+        text=choice(advices).get('text'),
         reply_markup=menu.get_more_help()
     )
 
