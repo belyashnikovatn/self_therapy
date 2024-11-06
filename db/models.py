@@ -1,17 +1,9 @@
 """Models declarations."""
 
-import enum
-
-from sqlalchemy import BigInteger, Enum, ForeignKey, Integer, String, Text
+from sqlalchemy import BigInteger, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from db.database import Base
-
-
-class Kind(enum.Enum):
-    helptip: str
-    mood: str
-    selfesteem: str
 
 
 class User(Base):
@@ -41,9 +33,9 @@ class Note(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey('user.id'), nullable=False)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    kind: Mapped[str] = mapped_column(Enum(Kind))
+    type: Mapped[str] = mapped_column(String, nullable=False)
     user: Mapped['User'] = relationship('User', back_populates='notes')
 
     def __repr__(self) -> str:
-        return (f'Запись типа {self.kind} у'
+        return (f'Запись типа {self.type} у'
                 f'пользователя {self.user_id}')
