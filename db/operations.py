@@ -1,13 +1,14 @@
+"""Required operations"""
+
 from bot import logger
-from .base import connection
-from .models import User, Note
+from db.base import connection
+from db.models import User, Note
 from sqlalchemy import select
-from typing import List, Dict, Any, Optional
 from sqlalchemy.exc import SQLAlchemyError
 
 
 @connection
-async def set_user(session, tg_id: int, username: str, full_name: str) -> Optional[User]:
+async def set_user(session, tg_id: int, username: str, full_name: str):
     try:
         user = await session.scalar(select(User).filter_by(id=tg_id))
         if not user:
@@ -22,3 +23,5 @@ async def set_user(session, tg_id: int, username: str, full_name: str) -> Option
     except SQLAlchemyError as e:
         logger.error(f'Error!! {e}')
         await session.rollback()
+
+
