@@ -8,13 +8,11 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
-from db.operations import set_user, get_advices
+from db.operations import set_user, get_advices, add_note
 import keyboards.menu as menu
 
 
 router = Router()
-
-# support_tips = ['Дышите квадратами', 'Пробегитесь!', 'Умойтесь холодной водой']
 
 
 class Mood(StatesGroup):
@@ -77,6 +75,7 @@ async def send_support(callback: CallbackQuery):
 
 @router.callback_query(F.data == 'mood')
 async def get_mood(callback: CallbackQuery, state: FSMContext):
+    await state.clear()
     await callback.message.answer(
         'Напишите в любой форме, что вы сейчас чувствуете'
     )
@@ -111,7 +110,13 @@ async def get_all_selfesteem(callback: CallbackQuery):
 
 @router.message(Mood.addition, F.text)
 async def mood_done(message: Message, state: FSMContext):
-    await state.update_data(mood=message.text)
+    # await state.update_data(mood=message.text)
+    # mood = await state.get_data()
+    await add_note(
+        user_id=message.from_user.id,
+        type='mood',
+        text=message.text
+    )
     await message.answer(
         text=f'Данные сохранены',
         reply_markup=menu.after_mood()

@@ -44,6 +44,7 @@ async def set_user(session, tg_id, username, full_name):
 
 @connection
 async def get_advices(session, user_id):
+    """Get all help advices by user."""
     try:
         result = await session.execute(select(Advice).filter_by(user_id=user_id))
         advices = result.scalars().all()
