@@ -2,9 +2,10 @@ import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
+from aiogram.types import BotCommand, BotCommandScopeDefault
 
 from config_reader import config
-from handlers import commands, callbacks
+from handlers import commands
 from db.base import create_tables
 
 
@@ -25,10 +26,12 @@ logger = init_logger()
 
 async def main():
     bot = Bot(token=config.bot_token.get_secret_value())
+    lst = [BotCommand(command='start', description='Начало')]
+    await bot.set_my_commands(lst, BotCommandScopeDefault())
     dp = Dispatcher()
     await create_tables()
     dp.include_router(commands.router)
-    dp.include_router(callbacks.router)
+    # dp.include_router(callbacks.router)
     await dp.start_polling(bot)
 
 
