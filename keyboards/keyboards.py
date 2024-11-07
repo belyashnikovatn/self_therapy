@@ -12,25 +12,26 @@ def main_kb():
         [
             KeyboardButton(text='👤 Что я чувствую'),
             KeyboardButton(text='💌 Похвалить себя')],
-        [KeyboardButton(text='⚙ Кнопка настроек')]
+        [
+            KeyboardButton(text='⚙ Кнопка настроек'),
+            KeyboardButton(text='🗃 Статистика')
+        ]
     ]
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        one_time_keyboard=False,
         input_field_placeholder='Выберите пункт меню 👇'
     )
 
 
 def stop_fsm():
     kb_list = [
-        [KeyboardButton(text='Галя, у нас отмена')],
+        [KeyboardButton(text='❌ Отменить действие')],
         [KeyboardButton(text='🏠 Главное меню')]
     ]
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        one_time_keyboard=False,
         input_field_placeholder='Можно отменить и вернуться в меню'
     )
 
@@ -43,7 +44,6 @@ def more_help():
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        one_time_keyboard=False,
         input_field_placeholder='Выберите пункт меню 👇'
     )
 
@@ -56,7 +56,6 @@ def mood():
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        one_time_keyboard=False,
         input_field_placeholder='Выберите пункт меню 👇'
     )
 
@@ -70,6 +69,5 @@ def selfesteem():
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        one_time_keyboard=False,
         input_field_placeholder='Выберите пункт меню 👇'
     )

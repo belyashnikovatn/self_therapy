@@ -9,7 +9,7 @@ from aiogram.fsm.state import StatesGroup, State
 from db.operations import (
     add_note,
     get_advices,
-    get_moods,
+    get_notes,
     set_user,
 )
 import keyboards.keyboards as kb
@@ -39,9 +39,18 @@ async def cmd_start(message: Message, state: FSMContext):
         full_name=message.from_user.full_name
     )
     await message.answer(
-        f'{user.full_name}, воспользуйтесь меню',
+        f'{user.full_name}, давайте подумаем, чего вам хочется',
         reply_markup=kb.main_kb()
     )
+
+
+@router.message(F.text == '❌ Отменить действие')
+async def cmd_cancel(message: Message, state: FSMContext):
+    await state.clear()
+    await message.answer(
+        'Действие отменено. Воспользуйтесь меню',
+        reply_markup=kb.main_kb()
+        )
 
 
 @router.message(F.text.startswith('❤‍🩹'))
@@ -110,15 +119,43 @@ async def cmd_selfesteem_done(message: Message, state: FSMContext):
 @router.message(F.text == '🗒 Дневник эмоций')
 async def cmd_get_mood(message: Message, state: FSMContext):
     await state.clear()
-    moods = await get_moods(
+    moods = await get_notes(
         user_id=message.from_user.id,
         type='mood'
     )
     if moods:
         text = '\n'.join([mood['text'] for mood in moods])
     else:
-        text = 'Пока что нет ни одной заметки'
+        text = 'Пока что нет ни одной строчки'
     await message.answer(
         text=text,
+        reply_markup=kb.main_kb()
+    )
+
+
+@router.message(F.text == '🗒 Дневник самооценки')
+async def cmd_get_selfesteem(message: Message, state: FSMContext):
+    await state.clear()
+    selfesteems = await get_notes(
+        user_id=message.from_user.id,
+        type='selfesteem'
+    )
+    if selfesteems:
+        text = '\n'.join([selfesteem['text'] for selfesteem in selfesteems])
+    else:
+        text = 'Пока что нет ни одной стрчоки'
+    await message.answer(
+        text=text,
+        reply_markup=kb.main_kb()
+    )
+
+
+
+@router.callback_query(F.data == 'main_menu')
+async def main_menu_process(call: CallbackQuery, state: FSMContext):
+    await state.clear()
+    await call.answer('Вы вернулись в главное меню.')
+    await call.message.answer(
+        'Выберите необходимое действие',
         reply_markup=kb.main_kb()
     )

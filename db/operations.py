@@ -108,26 +108,26 @@ async def get_note(session, note_id):
 
 
 @connection
-async def get_moods(session, user_id, type):
-    """Get mood lines by user."""
+async def get_notes(session, user_id, type):
+    """Get mood or selfesteem lines by user."""
     try:
         result = await session.execute(select(Note).filter_by(
             user_id=user_id,
             type=type
         ))
-        moods = result.scalars().all()
+        lines = result.scalars().all()
 
-        if not moods:
-            logger.info(f'Дневник эмоций юзера {user_id} пуст')
+        if not lines:
+            logger.info(f'Дневник юзера {user_id} пуст')
             return []
 
-        moods_list = [
+        lines_list = [
             {
-                'id': mood.id,
-                'text': mood.text,
-            } for mood in moods
+                'id': line.id,
+                'text': line.text,
+            } for line in lines
         ]
-        return moods_list
+        return lines_list
 
     except SQLAlchemyError as e:
         logger.error(f'Ошибка! Смотри {e}')
