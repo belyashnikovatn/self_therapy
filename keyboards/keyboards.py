@@ -5,6 +5,8 @@ from aiogram.types import (
     ReplyKeyboardMarkup
 )
 
+from constants import NOTE_LENGTH
+
 
 def main_kb():
     kb_list = [
@@ -77,7 +79,7 @@ def short_texts_notes(notes):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
     for note in notes:
         button = InlineKeyboardButton(
-            text=f'{note["date_created"]}: {note["text"][:15]}...',
+            text=f'{note["date_created"]}: {note["text"][:NOTE_LENGTH]}...',
             callback_data=f'manage_note_{note["id"]}'
         )
         keyboard.inline_keyboard.append([button])
