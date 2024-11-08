@@ -11,10 +11,10 @@ def main_kb():
         [KeyboardButton(text='❤‍🩹 Нужна помощь')],
         [
             KeyboardButton(text='👤 Что я чувствую'),
-            KeyboardButton(text='💌 Похвалить себя')],
+            KeyboardButton(text='🎉 Похвалить себя')],
         [
             KeyboardButton(text='⚙ Настройки'),
-            KeyboardButton(text='🗃 Статистика')
+            KeyboardButton(text='📊 Статистика')
         ]
     ]
     return ReplyKeyboardMarkup(
@@ -62,7 +62,7 @@ def mood():
 
 def selfesteem():
     kb_list = [
-        [KeyboardButton(text='💌 Написать ещё')],
+        [KeyboardButton(text='🎉 Написать ещё')],
         [KeyboardButton(text='🗒 Дневник самооценки')],
         [KeyboardButton(text='🏠 Главное меню')]
     ]

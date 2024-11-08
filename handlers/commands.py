@@ -63,7 +63,7 @@ async def cmd_cancel(message: Message, state: FSMContext):
         )
 
 
-@router.message(F.text == '🗃 Статистика')
+@router.message(F.text == '📊 Статистика')
 async def cmd_statistic_get(message: Message, state: FSMContext):
     """Get statistic"""
     await state.clear()
@@ -116,8 +116,9 @@ async def cmd_mood_post(message: Message, state: FSMContext):
     await state.clear()
 
 
-@router.message(F.text.startswith('💌'))
+@router.message(F.text.startswith('🎉'))
 async def cmd_selfesteem_pre_post(message: Message, state: FSMContext):
+    """Add a selfesteem note into diary: first step."""
     await state.clear()
     await message.answer(
         text='Вспомните, что полезного/приятного/хорошего вы'
@@ -125,11 +126,12 @@ async def cmd_selfesteem_pre_post(message: Message, state: FSMContext):
         'что вы об этом ещё никому не сказали. Напишите одну вещь.',
         reply_markup=kb.stop_fsm()
     )
-    await state.set_state(AddSelfesteem.addition)
+    await state.set_state(AddSelfesteem.progress)
 
 
 @router.message(AddSelfesteem.progress, F.text)
 async def cmd_selfesteem_post(message: Message, state: FSMContext):
+    """Add a selfesteem note into diary: second last step."""
     await add_note(
         user_id=message.from_user.id,
         type='selfesteem',
@@ -142,19 +144,24 @@ async def cmd_selfesteem_post(message: Message, state: FSMContext):
     await state.clear()
 
 
-@router.message(F.text == '🗒 Дневник эмоций')
-async def cmd_moods_get(message: Message, state: FSMContext):
+@router.message(F.text.startswith('🗒 Дневник'))
+async def cmd_notes_get(message: Message, state: FSMContext):
+    """Get diary by type: emotions or selfesteem."""
     await state.clear()
-    moods = await get_notes(
+    if message.text.split(' ')[-1] == 'эмоций':
+        type = 'mood'
+    else:
+        type = 'selfesteem'
+
+    notes = await get_notes(
         user_id=message.from_user.id,
-        type='mood',
+        type=type,
         count=NOTES_COUNT
     )
-    if moods:
-        # text = '\n'.join([mood['text'] for mood in moods])
+    if notes:
         await message.answer(
             'Записи ниже в списке. Выберите нужную',
-            reply_markup=kb.short_texts_notes(moods))
+            reply_markup=kb.short_texts_notes(notes))
     else:
         await message.answer(
             text='Пока что нет ни одной строчки',
@@ -162,26 +169,9 @@ async def cmd_moods_get(message: Message, state: FSMContext):
         )
 
 
-@router.message(F.text == '🗒 Дневник самооценки')
-async def cmd_selfesteems_get(message: Message, state: FSMContext):
-    await state.clear()
-    selfesteems = await get_notes(
-        user_id=message.from_user.id,
-        type='selfesteem',
-        count=NOTES_COUNT
-    )
-    if selfesteems:
-        text = '\n'.join([selfesteem['text'] for selfesteem in selfesteems])
-    else:
-        text = 'Пока что нет ни одной стрчоки'
-    await message.answer(
-        text=text,
-        reply_markup=kb.main_kb()
-    )
-
-
 @router.message(F.text == '⚙ Настройки')
 async def cmd_sets_get(message: Message, state: FSMContext):
+    """Gets all sets"""
     await state.clear()
     await message.answer(
         text='Выберите необходимое действие',
@@ -191,6 +181,7 @@ async def cmd_sets_get(message: Message, state: FSMContext):
 
 @router.callback_query(F.data == 'main_menu')
 async def cmd_main_menu(call: CallbackQuery, state: FSMContext):
+    """Come back to Main menu from note editing mode."""
     await state.clear()
     await call.answer('Вы вернулись в главное меню.')
     await call.message.answer(
@@ -201,6 +192,7 @@ async def cmd_main_menu(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith('manage_note_'))
 async def cmd_note_get(call: CallbackQuery, state: FSMContext):
+    """Get a note any type to edit or delete."""
     await call.answer()
     await state.clear()
     note_id = int(call.data.replace('manage_note_', ''))
@@ -214,6 +206,7 @@ async def cmd_note_get(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith('edit_note_'))
 async def cmd_note_pre_put(call: CallbackQuery, state: FSMContext):
+    """Editing text from any note by id: first step."""
     await state.clear()
     note_id = int(call.data.replace('edit_note_', ''))
     await call.answer(f'Редактируем текст {note_id}')
@@ -224,6 +217,7 @@ async def cmd_note_pre_put(call: CallbackQuery, state: FSMContext):
 
 @router.message(EditNote.progress, F.text)
 async def cmd_note_put(message: Message, state: FSMContext):
+    """Editing text from any note by id: last step."""
     note_data = await state.get_data()
     note_id = note_data['note_id']
     note = await get_note(note_id=note_id)
@@ -251,14 +245,10 @@ async def cmd_note_put(message: Message, state: FSMContext):
             reply_markup=kb.main_kb()
         )
 
-    # await message.answer(
-    #     text='Запись изменена',
-    #     reply_markup=kb.main_kb()
-    # )
-
 
 @router.callback_query(F.data.startswith('delete_note_'))
 async def cmd_note_delete(call: CallbackQuery, state: FSMContext):
+    """Delete any note by id."""
     await state.clear()
     note_id = int(call.data.replace('delete_note_', ''))
     note = await get_note(note_id=note_id)
