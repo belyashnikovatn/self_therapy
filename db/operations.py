@@ -41,7 +41,7 @@ async def set_user(session, tg_id, username, full_name):
             logger.info(f'Пользователь {tg_id} найден')
             return user
     except SQLAlchemyError as e:
-        logger.error(f'Ошибка! Смотри {e}')
+        logger.error(f'Ошибка: смотри {e}')
         await session.rollback()
 
 
@@ -66,7 +66,7 @@ async def get_advices(session, user_id):
         return advices_list
 
     except SQLAlchemyError as e:
-        logger.error(f'Ошибка! Смотри {e}')
+        logger.error(f'Ошибка: смотри {e}')
         return []
 
 
@@ -87,7 +87,7 @@ async def add_note(session, user_id, type, text):
         logger.info(f'Запись типа {type} у {user_id} добавлена')
         return new_note
     except SQLAlchemyError as e:
-        logger.error(f'Ошибка! Смотри {e}')
+        logger.error(f'Ошибка: смотри {e}')
         await session.rollback()
 
 
@@ -100,35 +100,73 @@ async def get_note(session, note_id):
             return None
         return {
             'id': note.id,
-            'text': note.text
+            'text': note.text,
+            'date_created': note.created_at,
+            'type': note.type
         }
     except SQLAlchemyError as e:
-        logger.error(f'Ошибка! Смотри {e}')
+        logger.error(f'Ошибка: смотри {e}')
         return None
 
 
 @connection
 async def get_notes(session, user_id, type):
-    """Get mood or selfesteem lines by user."""
+    """Get mood or selfesteem notes by user."""
     try:
         result = await session.execute(select(Note).filter_by(
             user_id=user_id,
             type=type
         ))
-        lines = result.scalars().all()
+        notes = result.scalars().all()
 
-        if not lines:
+        if not notes:
             logger.info(f'Дневник юзера {user_id} пуст')
             return []
 
-        lines_list = [
+        notes_list = [
             {
-                'id': line.id,
-                'text': line.text,
-            } for line in lines
+                'id': note.id,
+                'text': note.text,
+                'date_created': note.created_at,
+                'type': note.type
+            } for note in notes
         ]
-        return lines_list
+        return notes_list
 
     except SQLAlchemyError as e:
-        logger.error(f'Ошибка! Смотри {e}')
+        logger.error(f'Ошибка: смотри {e}')
         return []
+
+
+@connection
+async def update_note(session, note_id, text):
+    try:
+        note = await session.scalar(select(Note).filter_by(id=note_id))
+        if not note:
+            logger.error(f'Заметка {note_id} не найдена')
+            return None
+
+        note.text = text
+        await session.commit()
+        logger.info(f'Заметка {note_id} обновлена')
+        return note
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        await session.rollback()
+
+
+@connection
+async def delete_note(session, note_id):
+    try:
+        note = await session.get(Note, note_id)
+        if not note:
+            logger.error(f'Заметка {note_id} не найдена')
+            return None
+        await session.delete(note)
+        await session.commit()
+        logger.info(f'Заметка {note_id} удалена')
+        return note
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        session.rollback()
+        return None
