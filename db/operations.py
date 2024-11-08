@@ -3,7 +3,7 @@
 from bot import logger
 from db.base import connection
 from db.models import User, Note, Advice
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 
 
@@ -49,7 +49,8 @@ async def set_user(session, tg_id, username, full_name):
 async def get_advices(session, user_id):
     """Get all help advices by user."""
     try:
-        result = await session.execute(select(Advice).filter_by(user_id=user_id))
+        result = await session.execute(select(Advice).filter_by(
+            user_id=user_id))
         advices = result.scalars().all()
 
         if not advices:
@@ -72,6 +73,7 @@ async def get_advices(session, user_id):
 
 @connection
 async def add_note(session, user_id, type, text):
+    """"""
     try:
         user = await session.scalar(select(User).filter_by(id=user_id))
         if not user:
@@ -110,13 +112,13 @@ async def get_note(session, note_id):
 
 
 @connection
-async def get_notes(session, user_id, type):
+async def get_notes(session, user_id, type, count):
     """Get mood or selfesteem notes by user."""
     try:
         result = await session.execute(select(Note).filter_by(
             user_id=user_id,
             type=type
-        ))
+        ).limit(count))
         notes = result.scalars().all()
 
         if not notes:
@@ -166,6 +168,21 @@ async def delete_note(session, note_id):
         await session.commit()
         logger.info(f'Заметка {note_id} удалена')
         return note
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        session.rollback()
+        return None
+
+
+@connection
+async def get_statistic(session, user_id):
+    try:
+        notes = await session.execute(select(Note).filter_by(
+            user_id=user_id,
+            type='selfesteem')
+        )
+        notes_count = len(notes.scalars().all())
+        return notes_count
     except SQLAlchemyError as e:
         logger.error(f'Ошибка: смотри {e}')
         session.rollback()

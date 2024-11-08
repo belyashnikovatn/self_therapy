@@ -6,13 +6,14 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
 
-
+from constants import NOTES_COUNT
 from db.operations import (
     add_note,
     delete_note,
     get_advices,
     get_note,
     get_notes,
+    get_statistic,
     set_user,
     update_note
 )
@@ -54,6 +55,7 @@ async def cmd_start(message: Message, state: FSMContext):
 
 @router.message(F.text == '❌ Отменить действие')
 async def cmd_cancel(message: Message, state: FSMContext):
+    """Cancel any action"""
     await state.clear()
     await message.answer(
         'Действие отменено. Воспользуйтесь меню',
@@ -61,8 +63,22 @@ async def cmd_cancel(message: Message, state: FSMContext):
         )
 
 
+@router.message(F.text == '🗃 Статистика')
+async def cmd_statistic_get(message: Message, state: FSMContext):
+    """Get statistic"""
+    await state.clear()
+    results = await get_statistic(
+        user_id=message.from_user.id
+    )
+    await message.answer(
+        f'На сегодня: {results}',
+        reply_markup=kb.main_kb()
+        )
+
+
 @router.message(F.text.startswith('❤‍🩹'))
 async def cmd_advice_get(message: Message, state: FSMContext):
+    """Get 1 of all help advices"""
     await state.clear()
     advices = await get_advices(
         user_id=message.from_user.id
@@ -75,6 +91,7 @@ async def cmd_advice_get(message: Message, state: FSMContext):
 
 @router.message(F.text.startswith('👤'))
 async def cmd_mood_pre_post(message: Message, state: FSMContext):
+    """Add an emotion into diary: first step."""
     await state.clear()
     await message.answer(
         text='Напишите как можно подробнее, что вы сейчас чувствуете \n'
@@ -86,6 +103,7 @@ async def cmd_mood_pre_post(message: Message, state: FSMContext):
 
 @router.message(AddMood.progress, F.text)
 async def cmd_mood_post(message: Message, state: FSMContext):
+    """Add en emotion: second and last step."""
     await add_note(
         user_id=message.from_user.id,
         type='mood',
@@ -107,7 +125,7 @@ async def cmd_selfesteem_pre_post(message: Message, state: FSMContext):
         'что вы об этом ещё никому не сказали. Напишите одну вещь.',
         reply_markup=kb.stop_fsm()
     )
-    await state.set_state(Selfesteem.addition)
+    await state.set_state(AddSelfesteem.addition)
 
 
 @router.message(AddSelfesteem.progress, F.text)
@@ -129,7 +147,8 @@ async def cmd_moods_get(message: Message, state: FSMContext):
     await state.clear()
     moods = await get_notes(
         user_id=message.from_user.id,
-        type='mood'
+        type='mood',
+        count=NOTES_COUNT
     )
     if moods:
         # text = '\n'.join([mood['text'] for mood in moods])
@@ -148,7 +167,8 @@ async def cmd_selfesteems_get(message: Message, state: FSMContext):
     await state.clear()
     selfesteems = await get_notes(
         user_id=message.from_user.id,
-        type='selfesteem'
+        type='selfesteem',
+        count=NOTES_COUNT
     )
     if selfesteems:
         text = '\n'.join([selfesteem['text'] for selfesteem in selfesteems])
@@ -206,17 +226,35 @@ async def cmd_note_pre_put(call: CallbackQuery, state: FSMContext):
 async def cmd_note_put(message: Message, state: FSMContext):
     note_data = await state.get_data()
     note_id = note_data['note_id']
+    note = await get_note(note_id=note_id)
+
     text = message.text.strip()
     await update_note(
         note_id=note_id,
         text=text
     )
     await state.clear()
-    await message.answer(
-        text='Запись изменена',
-        reply_markup=kb.main_kb()
+
+    notes = await get_notes(
+        user_id=message.from_user.id,
+        type=note['type'],
+        count=NOTES_COUNT
     )
-    await state.clear()
+    if notes:
+        await message.answer(
+            text='Запись изменена!',
+            reply_markup=kb.short_texts_notes(notes)
+        )
+    else:
+        await message.answer(
+            text='Пока что нет ни одной строчки',
+            reply_markup=kb.main_kb()
+        )
+
+    # await message.answer(
+    #     text='Запись изменена',
+    #     reply_markup=kb.main_kb()
+    # )
 
 
 @router.callback_query(F.data.startswith('delete_note_'))
@@ -233,11 +271,12 @@ async def cmd_note_delete(call: CallbackQuery, state: FSMContext):
 
     notes = await get_notes(
         user_id=call.from_user.id,
-        type=note['type']
+        type=note['type'],
+        count=NOTES_COUNT
     )
     if notes:
         await call.message.answer(
-            'Записи ниже в списке. Выберите нужную',
+            text='Записи ниже в списке. Выберите нужную',
             reply_markup=kb.short_texts_notes(notes)
         )
     else:

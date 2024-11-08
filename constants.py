@@ -1,0 +1,1 @@
+NOTES_COUNT = 5
