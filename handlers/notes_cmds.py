@@ -40,7 +40,7 @@ async def cmd_pre_post(message: Message, state: FSMContext):
     """Add into diary emotion/selfesteem: first step."""
     await state.clear()
     if message.text.startswith('🎉'):
-        text = ('Вспомните, что полезного/приятного/хорошего вы'
+        text = ('Вспомните, что полезного/приятного/хорошего вы '
         'сегодня сделали. Это может быть что угодно, но важно, '
         'что вы об этом ещё никому не сказали. Напишите одну вещь.')
         await state.set_state(AddSelfesteem.progress)
@@ -119,7 +119,6 @@ async def cmd_note_get(call: CallbackQuery, state: FSMContext):
     note = await get_note(note_id=note_id)
     await call.message.answer(
         text=f'Вот запись {note["text"]}',
-        # text=f'{note_id}',
         reply_markup=kb_notes.manage_note(note_id)
         )
 

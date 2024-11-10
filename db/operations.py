@@ -7,6 +7,7 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import SQLAlchemyError
 
 
+#Presets for every user.
 help_advices = [
     'Дыхание по квадрату: 4 секунды вдох, 4 секунды задержка, 4 секунды выдох, 4 секунды задержка.',
     'Найдите и обратите внимание:\r\n5. на ПЯТЬ «вещей», которые видите вокруг себя,\r\n4. на ЧЕТЫРЕ «вещи», которые можно потрогать, пощупать,\r\n3. на ТРИ вещи, которые вы можете слышать,\r\n2. на ДВЕ вещи, которые вы чувствуете по запаху,\r\n1. на ОДНУ вещь, которую вы можете попробовать.',
@@ -46,11 +47,12 @@ async def set_user(session, tg_id, username, full_name):
 
 
 @connection
-async def get_advices(session, user_id):
+async def get_advices(session, user_id, count):
     """Get all help advices by user."""
     try:
         result = await session.execute(select(Advice).filter_by(
-            user_id=user_id))
+            user_id=user_id
+            ).limit(count))
         advices = result.scalars().all()
 
         if not advices:
@@ -73,8 +75,63 @@ async def get_advices(session, user_id):
 
 
 @connection
+async def get_advice(session, advice_id):
+    """Get one help advice for user."""
+    try:
+        advice = await session.get(Advice, advice_id)
+        if not advice:
+            logger.info(f'Запись с {advice_id} не найдена')
+            return None
+        return {
+            'id': advice.id,
+            'text': advice.text,
+            'date_created': advice.created_at,
+            'rating': advice.rating
+        }
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        return None
+
+
+@connection
+async def update_advice(session, advice_id, text):
+    """Update an advice."""
+    try:
+        advice = await session.scalar(select(Advice).filter_by(id=advice_id))
+        if not advice:
+            logger.error(f'Совет {advice_id} не найден')
+            return None
+
+        advice.text = text
+        await session.commit()
+        logger.info(f'Совет {advice_id} обновлен')
+        return advice
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        await session.rollback()
+
+
+@connection
+async def delete_advice(session, advice_id):
+    """Delete an advice."""
+    try:
+        advice = await session.get(Advice, advice_id)
+        if not advice:
+            logger.error(f'Совет {advice_id} не найден')
+            return None
+        await session.delete(advice)
+        await session.commit()
+        logger.info(f'Совет {advice_id} удалён')
+        return advice
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        session.rollback()
+        return None
+
+
+@connection
 async def add_note(session, user_id, type, text):
-    """"""
+    """Add an emotion or selfesteem into diary."""
     try:
         user = await session.scalar(select(User).filter_by(id=user_id))
         if not user:
@@ -96,6 +153,7 @@ async def add_note(session, user_id, type, text):
 
 @connection
 async def get_note(session, note_id):
+    """Get mood or selfesteem notes by note_id."""
     try:
         note = await session.get(Note, note_id)
         if not note:
@@ -113,26 +171,8 @@ async def get_note(session, note_id):
 
 
 @connection
-async def get_advice(session, advice_id):
-    try:
-        advice = await session.get(Advice, advice_id)
-        if not advice:
-            logger.info(f'Запись с {advice_id} не найдена')
-            return None
-        return {
-            'id': advice.id,
-            'text': advice.text,
-            'date_created': advice.created_at,
-            'rating': advice.rating
-        }
-    except SQLAlchemyError as e:
-        logger.error(f'Ошибка: смотри {e}')
-        return None
-
-
-@connection
 async def get_notes(session, user_id, type, count):
-    """Get mood or selfesteem notes by user."""
+    """Get list of mood or selfesteem notes by user and type."""
     try:
         result = await session.execute(select(Note).filter_by(
             user_id=user_id,
@@ -161,6 +201,7 @@ async def get_notes(session, user_id, type, count):
 
 @connection
 async def update_note(session, note_id, text):
+    """Update mood or selfesteem notes by note_id."""
     try:
         note = await session.scalar(select(Note).filter_by(id=note_id))
         if not note:
@@ -176,25 +217,10 @@ async def update_note(session, note_id, text):
         await session.rollback()
 
 
-@connection
-async def update_advice(session, advice_id, text):
-    try:
-        advice = await session.scalar(select(Advice).filter_by(id=advice_id))
-        if not advice:
-            logger.error(f'Совет {advice_id} не найден')
-            return None
-
-        advice.text = text
-        await session.commit()
-        logger.info(f'Совет {advice_id} обновлен')
-        return advice
-    except SQLAlchemyError as e:
-        logger.error(f'Ошибка: смотри {e}')
-        await session.rollback()
-
 
 @connection
 async def delete_note(session, note_id):
+    """Delete mood or selfesteem notes by note_id."""
     try:
         note = await session.get(Note, note_id)
         if not note:
@@ -211,24 +237,8 @@ async def delete_note(session, note_id):
 
 
 @connection
-async def delete_advice(session, advice_id):
-    try:
-        advice = await session.get(Advice, advice_id)
-        if not advice:
-            logger.error(f'Совет {advice_id} не найден')
-            return None
-        await session.delete(advice)
-        await session.commit()
-        logger.info(f'Совет {advice_id} удалён')
-        return advice
-    except SQLAlchemyError as e:
-        logger.error(f'Ошибка: смотри {e}')
-        session.rollback()
-        return None
-
-
-@connection
 async def get_statistic(session, user_id):
+    """Get statistic by user for today."""
     try:
         notes = await session.execute(select(Note).filter_by(
             user_id=user_id,

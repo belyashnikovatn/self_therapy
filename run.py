@@ -2,7 +2,7 @@ import asyncio
 
 from aiogram.types import BotCommand, BotCommandScopeDefault
 
-from bot import bot, dp, logger
+from bot import bot, dp, logger, admin
 from db.base import create_tables
 from handlers import (
     advices_cmds,
@@ -15,10 +15,17 @@ async def start_bot():
     start_cmds = [BotCommand(command='start', description='Начало')]
     await bot.set_my_commands(start_cmds, BotCommandScopeDefault())
     await create_tables()
+    try:
+        await bot.send_message(admin, 'Я запущен🥳')
+    except:
+        logger.error('Something goes ne tak')
 
 
 async def stop_bot():
-    pass
+    try:
+        await bot.send_message(admin, 'Its DONE!')
+    except:
+        logger.error('Something goes ne tak')
 
 
 async def main():
@@ -32,11 +39,9 @@ async def main():
         await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types())
     finally:
         await bot.session.close()
-    # await dp.start_polling(bot)
 
 
 if __name__ == '__main__':
-    # asyncio.run(main())
     try:
         asyncio.get_event_loop().run_until_complete(main())
     except KeyboardInterrupt:

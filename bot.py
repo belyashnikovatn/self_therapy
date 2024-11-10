@@ -24,3 +24,4 @@ logger = init_logger()
 
 bot = Bot(token=config.bot_token.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
 dp = Dispatcher(storage=MemoryStorage())
+admin = config.admin_token.get_secret_value()

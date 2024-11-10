@@ -35,6 +35,7 @@ async def cmd_advice_get(message: Message, state: FSMContext):
     """Get 1 of all help advices"""
     await state.clear()
     advices = await get_advices(
+        count=ADVICES_COUNT,
         user_id=message.from_user.id
     )
     await message.answer(
@@ -47,6 +48,7 @@ async def cmd_advice_get(message: Message, state: FSMContext):
 async def cmd_advices_get(message: Message, state: FSMContext):
     await state.clear()
     advices = await get_advices(
+        count=ADVICES_COUNT,
         user_id=message.from_user.id
     )
     if advices:
@@ -69,7 +71,6 @@ async def cmd_advice_get_to_change(call: CallbackQuery, state: FSMContext):
     advice = await get_advice(advice_id=advice_id)
     await call.message.answer(
         text=f'Вот запись {advice["text"]}',
-        # text=f'{note_id}',
         reply_markup=kb_advices.manage_advice(advice_id)
         )
 
@@ -89,7 +90,7 @@ async def cmd_advice_pre_put(call: CallbackQuery, state: FSMContext):
 async def cmd_advice_put(message: Message, state: FSMContext):
     """Editing text of advice by id: last step."""
     advice_data = await state.get_data()
-    advice_id = advice_data['id']
+    advice_id = advice_data['advice_id']
 
     text = message.text.strip()
     await update_advice(
