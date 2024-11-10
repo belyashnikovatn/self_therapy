@@ -1,7 +1,4 @@
-from random import choice
-
 from aiogram import F, Router
-from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -10,14 +7,14 @@ from constants import NOTES_COUNT
 from db.operations import (
     add_note,
     delete_note,
-    get_advices,
     get_note,
     get_notes,
-    get_statistic,
-    set_user,
     update_note
 )
-import keyboards.keyboards as kb
+from keyboards import (
+    kb_main_menu,
+    kb_notes
+)
 
 router = Router()
 
@@ -37,77 +34,6 @@ class EditNote(StatesGroup):
     progress = State()
 
 
-@router.message(F.text == '🏠 Главное меню')
-@router.message(CommandStart())
-async def cmd_start(message: Message, state: FSMContext):
-    """Handle start command"""
-    await state.clear()
-    user = await set_user(
-        tg_id=message.from_user.id,
-        username=message.from_user.username,
-        full_name=message.from_user.full_name
-    )
-    await message.answer(
-        f'{user.full_name}, давайте подумаем, чего вам хочется',
-        reply_markup=kb.main_kb()
-    )
-
-
-@router.message(F.text == '⭐ Как это работает')
-async def cmd_cancel(message: Message, state: FSMContext):
-    """Documentation"""
-    await state.clear()
-    await message.answer(
-        'Обычная магия, ничего такого',
-        reply_markup=kb.main_kb()
-        )
-
-
-@router.message(F.text == '❌ Отменить действие')
-async def cmd_cancel(message: Message, state: FSMContext):
-    """Cancel any action"""
-    await state.clear()
-    await message.answer(
-        'Действие отменено. Воспользуйтесь меню',
-        reply_markup=kb.main_kb()
-        )
-
-
-@router.message(F.text == '⚙ Настройки')
-async def cmd_sets_get(message: Message, state: FSMContext):
-    """Gets all sets"""
-    await state.clear()
-    await message.answer(
-        text='Выберите необходимое действие',
-        reply_markup=kb.get_sets()
-    )
-
-
-@router.message(F.text == '📊 Статистика')
-async def cmd_statistic_get(message: Message, state: FSMContext):
-    """Get statistic"""
-    await state.clear()
-    results = await get_statistic(
-        user_id=message.from_user.id
-    )
-    await message.answer(
-        f'На сегодня: {results}',
-        reply_markup=kb.main_kb()
-        )
-
-
-@router.message(F.text.startswith('💔'))
-async def cmd_advice_get(message: Message, state: FSMContext):
-    """Get 1 of all help advices"""
-    await state.clear()
-    advices = await get_advices(
-        user_id=message.from_user.id
-    )
-    await message.answer(
-        text=choice(advices)['text'],
-        reply_markup=kb.advice()
-    )
-
 @router.message(F.text.startswith('🎉'))
 @router.message(F.text.startswith('👤'))
 async def cmd_pre_post(message: Message, state: FSMContext):
@@ -124,7 +50,7 @@ async def cmd_pre_post(message: Message, state: FSMContext):
         await state.set_state(AddMood.progress)
     await message.answer(
         text=text,
-        reply_markup=kb.stop_fsm()
+        reply_markup=kb_main_menu.stop_fsm()
     )
 
 
@@ -138,7 +64,7 @@ async def cmd_mood_post(message: Message, state: FSMContext):
     )
     await message.answer(
         text='Спасибо, что поделились',
-        reply_markup=kb.mood()
+        reply_markup=kb_notes.mood()
     )
     await state.clear()
 
@@ -153,7 +79,7 @@ async def cmd_selfesteem_post(message: Message, state: FSMContext):
     )
     await message.answer(
         text='Отлично!',
-        reply_markup=kb.selfesteem()
+        reply_markup=kb_notes.selfesteem()
     )
     await state.clear()
 
@@ -176,40 +102,12 @@ async def cmd_notes_get(message: Message, state: FSMContext):
     if notes:
         await message.answer(
             'Записи ниже в списке. Выберите нужную',
-            reply_markup=kb.notes_list(notes))
+            reply_markup=kb_notes.notes_list(notes))
     else:
         await message.answer(
             text='Пока что нет ни одной строчки',
-            reply_markup=kb.main_kb()
+            reply_markup=kb_main_menu.main_kb()
         )
-
-
-@router.message(F.text.startswith('❤ Список'))
-async def cmd_advices_get(message: Message, state: FSMContext):
-    await state.clear()
-    advices = await get_advices(
-        user_id=message.from_user.id
-    )
-    if advices:
-        await message.answer(
-            'Записи ниже в списке. Выберите нужную',
-            reply_markup=kb.notes_list(advices))
-    else:
-        await message.answer(
-            text='Пока что нет ни одной строчки',
-            reply_markup=kb.main_kb()
-        )
-
-
-@router.callback_query(F.data == 'main_menu')
-async def cmd_main_menu(call: CallbackQuery, state: FSMContext):
-    """Come back to Main menu from note editing mode."""
-    await state.clear()
-    await call.answer('Вы вернулись в главное меню.')
-    await call.message.answer(
-        'Выберите необходимое действие',
-        reply_markup=kb.main_kb()
-    )
 
 
 @router.callback_query(F.data.startswith('manage_note_'))
@@ -222,7 +120,7 @@ async def cmd_note_get(call: CallbackQuery, state: FSMContext):
     await call.message.answer(
         text=f'Вот запись {note["text"]}',
         # text=f'{note_id}',
-        reply_markup=kb.manage_note(note_id)
+        reply_markup=kb_notes.manage_note(note_id)
         )
 
 
@@ -264,7 +162,7 @@ async def cmd_note_put(message: Message, state: FSMContext):
     else:
         await message.answer(
             text='Пока что нет ни одной строчки',
-            reply_markup=kb.main_kb()
+            reply_markup=kb_main_menu.main_kb()
         )
 
 
@@ -289,10 +187,10 @@ async def cmd_note_delete(call: CallbackQuery, state: FSMContext):
     if notes:
         await call.message.answer(
             text='Записи ниже в списке. Выберите нужную',
-            reply_markup=kb.notes_list(notes)
+            reply_markup=kb_notes.notes_list(notes)
         )
     else:
         await call.message.answer(
             text='Пока что нет ни одной строчки',
-            reply_markup=kb.main_kb()
+            reply_markup=kb_main_menu.main_kb()
         )

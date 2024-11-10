@@ -8,7 +8,6 @@ from aiogram.types import (
 from constants import ADVICE_LENGTH
 
 
-
 def advice():
     kb_list = [
         [KeyboardButton(text='💔 Ещё совет')],
@@ -25,8 +24,8 @@ def advices_list(advices):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
     for advice in advices:
         button = InlineKeyboardButton(
-            text=f'{advice["date_created"]}: {advice["text"][:ADVICE_LENGTH]}...',
-            callback_data=f'manage_note_{advice["id"]}'
+            text=f'Рейтинг: {advice["rating"]}: {advice["text"][:ADVICE_LENGTH]}...',
+            callback_data=f'manage_advice_{advice["id"]}'
         )
         keyboard.inline_keyboard.append([button])
     keyboard.inline_keyboard.append([

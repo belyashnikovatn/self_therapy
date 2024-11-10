@@ -5,7 +5,11 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand, BotCommandScopeDefault
 
 from config_reader import config
-from handlers import commands
+from handlers import (
+    advices_cmds,
+    main_cmds,
+    notes_cmds,
+)
 from db.base import create_tables
 
 
@@ -30,7 +34,9 @@ async def main():
     await bot.set_my_commands(start_cmds, BotCommandScopeDefault())
     dp = Dispatcher()
     await create_tables()
-    dp.include_router(commands.router)
+    dp.include_router(main_cmds.router)
+    dp.include_router(advices_cmds.router)
+    dp.include_router(notes_cmds.router)
     await dp.start_polling(bot)
 
 

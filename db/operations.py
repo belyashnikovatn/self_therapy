@@ -113,6 +113,24 @@ async def get_note(session, note_id):
 
 
 @connection
+async def get_advice(session, advice_id):
+    try:
+        advice = await session.get(Advice, advice_id)
+        if not advice:
+            logger.info(f'Запись с {advice_id} не найдена')
+            return None
+        return {
+            'id': advice.id,
+            'text': advice.text,
+            'date_created': advice.created_at,
+            'rating': advice.rating
+        }
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        return None
+
+
+@connection
 async def get_notes(session, user_id, type, count):
     """Get mood or selfesteem notes by user."""
     try:
@@ -159,6 +177,23 @@ async def update_note(session, note_id, text):
 
 
 @connection
+async def update_advice(session, advice_id, text):
+    try:
+        advice = await session.scalar(select(Advice).filter_by(id=advice_id))
+        if not advice:
+            logger.error(f'Совет {advice_id} не найден')
+            return None
+
+        advice.text = text
+        await session.commit()
+        logger.info(f'Совет {advice_id} обновлен')
+        return advice
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        await session.rollback()
+
+
+@connection
 async def delete_note(session, note_id):
     try:
         note = await session.get(Note, note_id)
@@ -169,6 +204,23 @@ async def delete_note(session, note_id):
         await session.commit()
         logger.info(f'Заметка {note_id} удалена')
         return note
+    except SQLAlchemyError as e:
+        logger.error(f'Ошибка: смотри {e}')
+        session.rollback()
+        return None
+
+
+@connection
+async def delete_advice(session, advice_id):
+    try:
+        advice = await session.get(Advice, advice_id)
+        if not advice:
+            logger.error(f'Совет {advice_id} не найден')
+            return None
+        await session.delete(advice)
+        await session.commit()
+        logger.info(f'Совет {advice_id} удалён')
+        return advice
     except SQLAlchemyError as e:
         logger.error(f'Ошибка: смотри {e}')
         session.rollback()
