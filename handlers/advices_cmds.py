@@ -1,7 +1,6 @@
 from random import choice
 
 from aiogram import F, Router
-from aiogram.filters import CommandStart
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State
@@ -16,7 +15,6 @@ from db.operations import (
 from keyboards import (
     kb_advices,
     kb_main_menu,
-    kb_notes
 )
 
 router = Router()
@@ -92,7 +90,6 @@ async def cmd_advice_put(message: Message, state: FSMContext):
     """Editing text of advice by id: last step."""
     advice_data = await state.get_data()
     advice_id = advice_data['id']
-    advice = await get_advice(advice_id=advice_id)
 
     text = message.text.strip()
     await update_advice(
@@ -101,6 +98,7 @@ async def cmd_advice_put(message: Message, state: FSMContext):
     )
     await state.clear()
 
+    # Output a list of advices after editing.
     advices = await get_advices(
         user_id=message.from_user.id,
         count=ADVICES_COUNT
@@ -122,15 +120,14 @@ async def cmd_advice_delete(call: CallbackQuery, state: FSMContext):
     """Delete advice by id."""
     await state.clear()
     advice_id = int(call.data.replace('delete_advice_', ''))
-    advice = await get_advice(advice_id=advice_id)
     await delete_advice(advice_id=advice_id)
     await call.answer(
         text=f'Запись номер {advice_id} удалена',
         show_alert=True,
     )
-    await call.message.delete(advice)
+    await call.message.delete()
 
-    # Input a list of advices after deleting.
+    # Output a list of advices after deleting.
     advices = await get_advices(
         user_id=message.from_user.id,
         count=ADVICES_COUNT

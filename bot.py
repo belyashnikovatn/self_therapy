@@ -1,16 +1,11 @@
-import asyncio
 import logging
 
 from aiogram import Bot, Dispatcher
-from aiogram.types import BotCommand, BotCommandScopeDefault
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
+from aiogram.fsm.storage.memory import MemoryStorage
 
 from config_reader import config
-from handlers import (
-    advices_cmds,
-    main_cmds,
-    notes_cmds,
-)
-from db.base import create_tables
 
 
 def init_logger():
@@ -27,21 +22,5 @@ def init_logger():
 
 logger = init_logger()
 
-
-async def main():
-    bot = Bot(token=config.bot_token.get_secret_value())
-    start_cmds = [BotCommand(command='start', description='Начало')]
-    await bot.set_my_commands(start_cmds, BotCommandScopeDefault())
-    dp = Dispatcher()
-    await create_tables()
-    dp.include_router(main_cmds.router)
-    dp.include_router(advices_cmds.router)
-    dp.include_router(notes_cmds.router)
-    await dp.start_polling(bot)
-
-
-if __name__ == '__main__':
-    try:
-        asyncio.get_event_loop().run_until_complete(main())
-    except KeyboardInterrupt:
-        logger.info('Exit')
+bot = Bot(token=config.bot_token.get_secret_value(), default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
