@@ -105,7 +105,7 @@ async def cmd_advice_get(message: Message, state: FSMContext):
     )
     await message.answer(
         text=choice(advices)['text'],
-        reply_markup=kb.more_help()
+        reply_markup=kb.advice()
     )
 
 @router.message(F.text.startswith('🎉'))
@@ -176,7 +176,24 @@ async def cmd_notes_get(message: Message, state: FSMContext):
     if notes:
         await message.answer(
             'Записи ниже в списке. Выберите нужную',
-            reply_markup=kb.short_texts_notes(notes))
+            reply_markup=kb.notes_list(notes))
+    else:
+        await message.answer(
+            text='Пока что нет ни одной строчки',
+            reply_markup=kb.main_kb()
+        )
+
+
+@router.message(F.text.startswith('❤ Список'))
+async def cmd_advices_get(message: Message, state: FSMContext):
+    await state.clear()
+    advices = await get_advices(
+        user_id=message.from_user.id
+    )
+    if advices:
+        await message.answer(
+            'Записи ниже в списке. Выберите нужную',
+            reply_markup=kb.notes_list(advices))
     else:
         await message.answer(
             text='Пока что нет ни одной строчки',
@@ -242,7 +259,7 @@ async def cmd_note_put(message: Message, state: FSMContext):
     if notes:
         await message.answer(
             text='Запись изменена!',
-            reply_markup=kb.short_texts_notes(notes)
+            reply_markup=kb.notes_list(notes)
         )
     else:
         await message.answer(
@@ -272,7 +289,7 @@ async def cmd_note_delete(call: CallbackQuery, state: FSMContext):
     if notes:
         await call.message.answer(
             text='Записи ниже в списке. Выберите нужную',
-            reply_markup=kb.short_texts_notes(notes)
+            reply_markup=kb.notes_list(notes)
         )
     else:
         await call.message.answer(

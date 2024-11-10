@@ -38,6 +38,24 @@ def stop_fsm():
     )
 
 
+def get_sets():
+    kb_list = [
+        [KeyboardButton(text='⭐ Как это работает')],
+        [
+            KeyboardButton(text='🗒 Дневник эмоций'),
+            KeyboardButton(text='🗒 Дневник самооценки')],
+        [
+            KeyboardButton(text='❤ Список советов самопомощи'),
+            KeyboardButton(text='🏠 Главное меню')
+        ]
+    ]
+    return ReplyKeyboardMarkup(
+        keyboard=kb_list,
+        resize_keyboard=True,
+        input_field_placeholder='Выберите пункт меню'
+    )
+
+
 def more_help():
     kb_list = [
         [KeyboardButton(text='💔 Ещё совет')],
@@ -76,7 +94,23 @@ def selfesteem():
     )
 
 
-def short_texts_notes(notes):
+def advices_list(advices):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[])
+    for advice in advices:
+        button = InlineKeyboardButton(
+            text=f'{advice["date_created"]}: {advice["text"][:NOTE_LENGTH]}...',
+            callback_data=f'manage_note_{note["id"]}'
+        )
+        keyboard.inline_keyboard.append([button])
+    keyboard.inline_keyboard.append([
+        InlineKeyboardButton(
+            text='Главное меню',
+            callback_data='main_menu')
+        ])
+    return keyboard
+
+
+def notes_list(notes):
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
     for note in notes:
         button = InlineKeyboardButton(
@@ -102,22 +136,4 @@ def manage_note(note_id):
                 text='Удалить',
                 callback_data=f'delete_note_{note_id}')]
         ]
-    )
-
-
-def get_sets():
-    kb_list = [
-        [KeyboardButton(text='⭐ Как это работает')],
-        [
-            KeyboardButton(text='🗒 Дневник эмоций'),
-            KeyboardButton(text='🗒 Дневник самооценки')],
-        [
-            KeyboardButton(text='❤ Список советов самопомощи'),
-            KeyboardButton(text='🏠 Главное меню')
-        ]
-    ]
-    return ReplyKeyboardMarkup(
-        keyboard=kb_list,
-        resize_keyboard=True,
-        input_field_placeholder='Выберите пункт меню'
     )

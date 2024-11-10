@@ -61,7 +61,8 @@ async def get_advices(session, user_id):
             {
                 'id': advice.id,
                 'text': advice.text,
-                'rating': advice.rating
+                'rating': advice.rating,
+                'date_created': advice.created_at
             } for advice in advices
         ]
         return advices_list
