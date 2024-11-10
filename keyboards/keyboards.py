@@ -10,7 +10,7 @@ from constants import NOTE_LENGTH
 
 def main_kb():
     kb_list = [
-        [KeyboardButton(text='❤‍🩹 Нужна помощь')],
+        [KeyboardButton(text='💔 Нужна помощь')],
         [
             KeyboardButton(text='👤 Что я чувствую'),
             KeyboardButton(text='🎉 Похвалить себя')],
@@ -22,7 +22,7 @@ def main_kb():
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        input_field_placeholder='Выберите пункт меню 👇'
+        input_field_placeholder='Выберите пункт меню'
     )
 
 
@@ -40,13 +40,13 @@ def stop_fsm():
 
 def more_help():
     kb_list = [
-        [KeyboardButton(text='❤‍🩹 Ещё совет')],
+        [KeyboardButton(text='💔 Ещё совет')],
         [KeyboardButton(text='🏠 Главное меню')]
     ]
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        input_field_placeholder='Выберите пункт меню 👇'
+        input_field_placeholder='Выберите пункт меню'
     )
 
 
@@ -58,7 +58,7 @@ def mood():
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        input_field_placeholder='Выберите пункт меню 👇'
+        input_field_placeholder='Выберите пункт меню'
     )
 
 
@@ -71,7 +71,7 @@ def selfesteem():
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        input_field_placeholder='Выберите пункт меню 👇'
+        input_field_placeholder='Выберите пункт меню'
     )
 
 
@@ -118,5 +118,5 @@ def get_sets():
     return ReplyKeyboardMarkup(
         keyboard=kb_list,
         resize_keyboard=True,
-        input_field_placeholder='Выберите пункт меню 👇'
+        input_field_placeholder='Выберите пункт меню'
     )

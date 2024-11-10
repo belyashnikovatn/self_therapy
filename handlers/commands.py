@@ -53,6 +53,16 @@ async def cmd_start(message: Message, state: FSMContext):
     )
 
 
+@router.message(F.text == '⭐ Как это работает')
+async def cmd_cancel(message: Message, state: FSMContext):
+    """Documentation"""
+    await state.clear()
+    await message.answer(
+        'Обычная магия, ничего такого',
+        reply_markup=kb.main_kb()
+        )
+
+
 @router.message(F.text == '❌ Отменить действие')
 async def cmd_cancel(message: Message, state: FSMContext):
     """Cancel any action"""
@@ -76,7 +86,7 @@ async def cmd_statistic_get(message: Message, state: FSMContext):
         )
 
 
-@router.message(F.text.startswith('❤‍🩹'))
+@router.message(F.text.startswith('💔'))
 async def cmd_advice_get(message: Message, state: FSMContext):
     """Get 1 of all help advices"""
     await state.clear()
@@ -88,17 +98,24 @@ async def cmd_advice_get(message: Message, state: FSMContext):
         reply_markup=kb.more_help()
     )
 
-
+@router.message(F.text.startswith('🎉'))
 @router.message(F.text.startswith('👤'))
-async def cmd_mood_pre_post(message: Message, state: FSMContext):
-    """Add an emotion into diary: first step."""
+async def cmd_pre_post(message: Message, state: FSMContext):
+    """Add into diary: first step."""
     await state.clear()
+    if message.text.startswith('🎉'):
+        text = ('Вспомните, что полезного/приятного/хорошего вы'
+        'сегодня сделали. Это может быть что угодно, но важно, '
+        'что вы об этом ещё никому не сказали. Напишите одну вещь.')
+        await state.set_state(AddSelfesteem.progress)
+    elif message.text.startswith('👤'):
+        text = ('Напишите как можно подробнее, что вы сейчас чувствуете \n'
+        'Помните, что нет плохих или хороших эмоций: все они важны. \n')
+        await state.set_state(AddMood.progress)
     await message.answer(
-        text='Напишите как можно подробнее, что вы сейчас чувствуете \n'
-        'Помните, что нет плохих или хороших эмоций: все они важны. \n',
+        text=text,
         reply_markup=kb.stop_fsm()
     )
-    await state.set_state(AddMood.progress)
 
 
 @router.message(AddMood.progress, F.text)
@@ -114,19 +131,6 @@ async def cmd_mood_post(message: Message, state: FSMContext):
         reply_markup=kb.mood()
     )
     await state.clear()
-
-
-@router.message(F.text.startswith('🎉'))
-async def cmd_selfesteem_pre_post(message: Message, state: FSMContext):
-    """Add a selfesteem note into diary: first step."""
-    await state.clear()
-    await message.answer(
-        text='Вспомните, что полезного/приятного/хорошего вы'
-        'сегодня сделали. Это может быть что угодно, но важно, '
-        'что вы об этом ещё никому не сказали. Напишите одну вещь.',
-        reply_markup=kb.stop_fsm()
-    )
-    await state.set_state(AddSelfesteem.progress)
 
 
 @router.message(AddSelfesteem.progress, F.text)

@@ -21,11 +21,11 @@ MVP – главное меню с 3-мя функциями.
 
 
 ## Технологии:
-Python + aiogram
+Python + aiogram + SQLAlchemy
 
 
 ## Запуск проекта:
-- add .env with a BOT_TOKEN
+- $ touch .env (add a BOT_TOKEN inside)
 - $ python -m venv venv
 - $ source venv/Scripts/activate
 - $ python -m pip install --upgrade pip
