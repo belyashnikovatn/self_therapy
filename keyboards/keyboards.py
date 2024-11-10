@@ -52,6 +52,7 @@ def more_help():
 
 def mood():
     kb_list = [
+        [KeyboardButton(text='👤 Написать ещё')],
         [KeyboardButton(text='🗒 Дневник эмоций')],
         [KeyboardButton(text='🏠 Главное меню')]
     ]

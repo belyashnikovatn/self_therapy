@@ -33,7 +33,7 @@ class AddSelfesteem(StatesGroup):
 
 
 class EditNote(StatesGroup):
-    """For mood tracking"""
+    """For any note tracking"""
     progress = State()
 
 
@@ -73,6 +73,16 @@ async def cmd_cancel(message: Message, state: FSMContext):
         )
 
 
+@router.message(F.text == '⚙ Настройки')
+async def cmd_sets_get(message: Message, state: FSMContext):
+    """Gets all sets"""
+    await state.clear()
+    await message.answer(
+        text='Выберите необходимое действие',
+        reply_markup=kb.get_sets()
+    )
+
+
 @router.message(F.text == '📊 Статистика')
 async def cmd_statistic_get(message: Message, state: FSMContext):
     """Get statistic"""
@@ -101,7 +111,7 @@ async def cmd_advice_get(message: Message, state: FSMContext):
 @router.message(F.text.startswith('🎉'))
 @router.message(F.text.startswith('👤'))
 async def cmd_pre_post(message: Message, state: FSMContext):
-    """Add into diary: first step."""
+    """Add into diary emotion/selfesteem: first step."""
     await state.clear()
     if message.text.startswith('🎉'):
         text = ('Вспомните, что полезного/приятного/хорошего вы'
@@ -120,7 +130,7 @@ async def cmd_pre_post(message: Message, state: FSMContext):
 
 @router.message(AddMood.progress, F.text)
 async def cmd_mood_post(message: Message, state: FSMContext):
-    """Add en emotion: second and last step."""
+    """Add an emotion: second last step."""
     await add_note(
         user_id=message.from_user.id,
         type='mood',
@@ -135,7 +145,7 @@ async def cmd_mood_post(message: Message, state: FSMContext):
 
 @router.message(AddSelfesteem.progress, F.text)
 async def cmd_selfesteem_post(message: Message, state: FSMContext):
-    """Add a selfesteem note into diary: second last step."""
+    """Add a selfesteem: second last step."""
     await add_note(
         user_id=message.from_user.id,
         type='selfesteem',
@@ -152,9 +162,10 @@ async def cmd_selfesteem_post(message: Message, state: FSMContext):
 async def cmd_notes_get(message: Message, state: FSMContext):
     """Get diary by type: emotions or selfesteem."""
     await state.clear()
-    if message.text.split(' ')[-1] == 'эмоций':
+    type = message.text.split(' ')[-1]
+    if  type == 'эмоций':
         type = 'mood'
-    else:
+    elif type == 'самооценки':
         type = 'selfesteem'
 
     notes = await get_notes(
@@ -173,16 +184,6 @@ async def cmd_notes_get(message: Message, state: FSMContext):
         )
 
 
-@router.message(F.text == '⚙ Настройки')
-async def cmd_sets_get(message: Message, state: FSMContext):
-    """Gets all sets"""
-    await state.clear()
-    await message.answer(
-        text='Выберите необходимое действие',
-        reply_markup=kb.get_sets()
-    )
-
-
 @router.callback_query(F.data == 'main_menu')
 async def cmd_main_menu(call: CallbackQuery, state: FSMContext):
     """Come back to Main menu from note editing mode."""
@@ -196,7 +197,7 @@ async def cmd_main_menu(call: CallbackQuery, state: FSMContext):
 
 @router.callback_query(F.data.startswith('manage_note_'))
 async def cmd_note_get(call: CallbackQuery, state: FSMContext):
-    """Get a note any type to edit or delete."""
+    """Get a note of any type to edit or delete."""
     await call.answer()
     await state.clear()
     note_id = int(call.data.replace('manage_note_', ''))
